@@ -1,0 +1,33 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+  node-app:
+    build: .
+    # ports:
+    #   - '3000-30001:3000'
+    environment:
+      - PORT=3000
+    # start node-app after starting mongo service because depends mongo service
+    depends_on:
+      - mongo
+      - redis
+      - nginx
+  
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=moein
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+    volumes:
+      - mongo-db:/data/db
+
+  redis:
+    image: redis
+
+volumes:
+  mongo-db:
